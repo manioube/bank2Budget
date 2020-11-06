@@ -57,8 +57,8 @@ class Client(object):
     def _get_file(self, url, path):
         """ Télécharge un fichier dans le chemin spécifié
         (incluant son nom de fichier) avec les bons headers """
-        #r = self.session.get(url, headers=self.headers, stream=True)
-        r = self.session.get(url, stream=True)
+        r = self.session.get(url, headers=self.headers, stream=True)
+        #r = self.session.get(url, stream=True)
         if r.status_code == 200:
             with open(path, 'wb') as f:
                 r.raw.decode_content = True
@@ -121,13 +121,13 @@ class Client(object):
         retour_code = []
         for i in range(0, 3):
             retour_code.append(int(code_complet[int(self.pin_positions[i])-1]))
-        self.code_a_saisir = [0,1,2,3,4,5,6,7,8,9] # retour_code  #TODO: uncomment this line
+        #self.code_a_saisir = [0,1,2,3,4,5,6,7,8,9] # retour_code
+        self.code_a_saisir = retour_code
         print ("code_a_saisir", retour_code)
-        #return retour_code #TODO: uncomment this line
-        return [0,1,2,3,4,5,6,7,8,9]
+        return retour_code
+        #return [0,1,2,3,4,5,6,7,8,9]
 
     def _trouver_chiffre(self, chiffre):  # it seems the error is here!
-        #todo: solve this function!!!
         """ Retourne les coordonnées x,y du centre du chiffre
         sur le keypad (ou retourne False sinon) """
 
@@ -142,7 +142,7 @@ class Client(object):
             #     r.raw.decode_content = True
             #     shutil.copyfileobj(r.raw, f)
             #print("self.img_gray", self.img_gray)
-            # os.remove(_FICHIER_KEYPAD)
+            os.remove(_FICHIER_KEYPAD)
 
         threshold = 0.9
         print ("chiffre", chiffre)
@@ -194,7 +194,7 @@ class Client(object):
         r = self._post(url=_URL_SAISIE_CODE, post_data=post_data_dict)
         retour_saisie_code = json.loads(r.text)
         self.headers['Ingdf-Auth-Token'] = r.headers.get('Ingdf-Auth-Token')
-
+        print("retour_saisie_code", retour_saisie_code)
         return retour_saisie_code
 
     def _infos_client(self):
@@ -203,7 +203,7 @@ class Client(object):
         r = self._get(url=_URL_INFOS_CLIENT)
         retour_infos_client = json.loads(r.text)
         self.infos_client_json = retour_infos_client
-
+        print("retour_infos_client", retour_infos_client)
         return retour_infos_client
 
     def _synthese_comptes(self):

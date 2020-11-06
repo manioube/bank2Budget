@@ -33,7 +33,7 @@ import ingdirect as ing
     type=str,
     help='votre mot de passe ING Direct (ex : 123456)',
     prompt='votre mot de passe ING Direct (ex : 123456)',
-    #hide_input=True,
+    hide_input=True,
     required=True,
 )
 @click.version_option(
