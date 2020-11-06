@@ -69,12 +69,14 @@ def synthese_comptes(num_client, date_naissance, code):
     ing = Client()
     ing._login(num_client=num_client, date_naissance=date_naissance)
     ing._recuperer_url_keypad()
-    ing._recuperer_keypad()
+    #ing._get_a_pic()
+    #ing._recuperer_keypad()
     ing._code_a_saisir(code_complet=code)
-    ing._recuperer_coord_chiffres()
-    ing._saisie_code()
-    ing._infos_client()
-    retour_synthese_comptes = ing._synthese_comptes()
-    ing._logout()
+    ing._recuperer_coord_chiffres() # it seems the error is here!
 
-    return Synthese_comptes(retour_synthese_comptes)
+    # ing._saisie_code()
+    # ing._infos_client()
+    # retour_synthese_comptes = ing._synthese_comptes()
+    # ing._logout()
+
+    # return Synthese_comptes(retour_synthese_comptes)

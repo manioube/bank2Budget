@@ -12,6 +12,7 @@ import cv2 as cv
 import numpy as np
 import os
 
+
 _URL_BASE = "https://m.ing.fr/secure/api-v1/"
 _URL_LOGIN = urljoin(_URL_BASE, "login/cif")
 _URL_KEYPAD = urljoin(_URL_BASE, "login/keypad")
@@ -56,11 +57,13 @@ class Client(object):
     def _get_file(self, url, path):
         """ Télécharge un fichier dans le chemin spécifié
         (incluant son nom de fichier) avec les bons headers """
-        r = self.session.get(url, headers=self.headers, stream=True)
+        #r = self.session.get(url, headers=self.headers, stream=True)
+        r = self.session.get(url, stream=True)
         if r.status_code == 200:
             with open(path, 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
+        # print (r.__dict__)
         return r
 
     def _post(self, url, post_data, expected_status_code=200):
@@ -78,6 +81,7 @@ class Client(object):
         post_data_dict = {"cif": num_client, "birthDate": date_naissance}
         r = self._post(url=_URL_LOGIN, post_data=post_data_dict)
         self.regie_id = r.json().get('regieId')
+        # print(self.regie_id) # added by me
     
     def _recuperer_url_keypad(self):
         post_data_dict = {
@@ -90,6 +94,9 @@ class Client(object):
         self.url_keypad = r.json().get('keyPadUrl')
         self.pin_positions = r.json().get('pinPositions')
 
+        # print("self.url_keypad:",self.url_keypad)
+        print("self.pin_positions:", self.pin_positions)
+
     def _recuperer_keypad(self):
         """ Télécharge l'image du clavier pour saisir le code
         dans le dossier courant (sous le nom keypad.png) """
@@ -98,7 +105,13 @@ class Client(object):
         if url_keypad[0] == '/':
             url_keypad = url_keypad[1:]
         url = urljoin(_URL_BASE, url_keypad)
+        # print ("url-keypad:",url)
         return self._get_file(url, _FICHIER_KEYPAD)
+
+    def _get_a_pic(self):
+
+        url_pic= "https://media.istockphoto.com/photos/woman-looking-at-view-from-a-cave-of-matera-basilicata-italy-picture-id1040315976"
+        return self._get_file(url_pic, "test_pic.jpg")
 
     def _code_a_saisir(self, code_complet):
         """ Renvoie les digits à saisir
@@ -109,40 +122,55 @@ class Client(object):
         for i in range(0, 3):
             retour_code.append(int(code_complet[int(self.pin_positions[i])-1]))
         self.code_a_saisir = retour_code
-
+        print ("code_a_saisir", retour_code)
         return retour_code
 
-    def _trouver_chiffre(self, chiffre):
+    def _trouver_chiffre(self, chiffre):  # it seems the error is here!
+        #todo: solve this function!!!
         """ Retourne les coordonnées x,y du centre du chiffre
         sur le keypad (ou retourne False sinon) """
 
         # On vérifie si l'image du keypad a déjà été récupérée
+        #print("hasattr(self, 'img_gray')", hasattr(self, 'img_gray'))
         if not hasattr(self, 'img_gray'):
             img_rgb = cv.imread(_FICHIER_KEYPAD)
+            #print ("img_rgb",img_rgb)
             self.img_gray = cv.cvtColor(img_rgb, cv.COLOR_BGR2GRAY)
-            os.remove(_FICHIER_KEYPAD)
+            #print("self.img_gray", self.img_gray)
+            # os.remove(_FICHIER_KEYPAD)
 
-        threshold = 0.9
+        threshold = 0.4
+        print ("chiffre", chiffre)
+        # print("chiffre not in range(0, 10)", chiffre not in range(0, 10))
         if chiffre not in range(0, 10):
-            retour = False
+            return False
         else:
             chemin_image_chiffre = os.path.join(
                                     _REPERTOIRE_SCRIPT,
                                     _REPERTOIRE_IMAGES_CHIFFRES,
                                     str(chiffre)+'.png'
                                     )
+            print ("chemin_image_chiffre", chemin_image_chiffre)
+
             template = cv.imread(chemin_image_chiffre, 0)
+            # print ("template", template)
             w, h = template.shape[::-1]  # Taille de l'image du chiffre
+            print("w, h", w, h)
+
             res = cv.matchTemplate(
                                     self.img_gray,
                                     template,
                                     cv.TM_CCOEFF_NORMED
                                     )
-            loc = np.where(res >= threshold)
+            print("res",res)
+            # print("threshold",threshold)
+            loc = np.where(res >= threshold) # it seems the error is here!
+            print("loc", loc)
             if len(loc[0]) >= 1 & len(loc[1]) >= 1:
                 retour = [(loc[1][0]+w/2), (loc[0][0]+h/2)]
             else:
                 retour = False  # Le chiffre n'a pas été trouvé
+            print ("retour:",retour)
             return retour
 
     def _recuperer_coord_chiffres(self):
@@ -151,6 +179,7 @@ class Client(object):
         for digit in self.code_a_saisir:
             liste_coord_chiffres.append(self._trouver_chiffre(digit))
         self.liste_coord_chiffres = liste_coord_chiffres
+        print("liste_coord_chiffres",liste_coord_chiffres)
         return liste_coord_chiffres
 
     def _saisie_code(self):

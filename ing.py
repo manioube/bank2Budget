@@ -33,7 +33,7 @@ import ingdirect as ing
     type=str,
     help='votre mot de passe ING Direct (ex : 123456)',
     prompt='votre mot de passe ING Direct (ex : 123456)',
-    hide_input=True,
+    #hide_input=True,
     required=True,
 )
 @click.version_option(
@@ -51,7 +51,7 @@ def main(numero_client, date_naissance, code):
     #     print(compte)
     # print(synthese_comptes)
 
-    print(synthese_comptes.csv())
+    # print(synthese_comptes.csv()) commented by me
 
 
 if __name__ == "__main__":
