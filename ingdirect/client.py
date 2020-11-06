@@ -121,9 +121,10 @@ class Client(object):
         retour_code = []
         for i in range(0, 3):
             retour_code.append(int(code_complet[int(self.pin_positions[i])-1]))
-        self.code_a_saisir = retour_code
+        self.code_a_saisir = [0,1,2,3,4,5,6,7,8,9] # retour_code  #TODO: uncomment this line
         print ("code_a_saisir", retour_code)
-        return retour_code
+        #return retour_code #TODO: uncomment this line
+        return [0,1,2,3,4,5,6,7,8,9]
 
     def _trouver_chiffre(self, chiffre):  # it seems the error is here!
         #todo: solve this function!!!
@@ -136,10 +137,14 @@ class Client(object):
             img_rgb = cv.imread(_FICHIER_KEYPAD)
             #print ("img_rgb",img_rgb)
             self.img_gray = cv.cvtColor(img_rgb, cv.COLOR_BGR2GRAY)
+            # cv.imwrite('blackandwhite.png', self.img_gray)
+            # with open(path, 'wb') as f:
+            #     r.raw.decode_content = True
+            #     shutil.copyfileobj(r.raw, f)
             #print("self.img_gray", self.img_gray)
             # os.remove(_FICHIER_KEYPAD)
 
-        threshold = 0.4
+        threshold = 0.9
         print ("chiffre", chiffre)
         # print("chiffre not in range(0, 10)", chiffre not in range(0, 10))
         if chiffre not in range(0, 10):
