@@ -108,11 +108,6 @@ class Client(object):
         # print ("url-keypad:",url)
         return self._get_file(url, _FICHIER_KEYPAD)
 
-    def _get_a_pic(self):
-
-        url_pic= "https://media.istockphoto.com/photos/woman-looking-at-view-from-a-cave-of-matera-basilicata-italy-picture-id1040315976"
-        return self._get_file(url_pic, "test_pic.jpg")
-
     def _code_a_saisir(self, code_complet):
         """ Renvoie les digits à saisir
         (ex : si le code et 876921, et que les pins 1,3,4 sont à saisir,
@@ -203,7 +198,7 @@ class Client(object):
         r = self._get(url=_URL_INFOS_CLIENT)
         retour_infos_client = json.loads(r.text)
         self.infos_client_json = retour_infos_client
-        print("retour_infos_client", retour_infos_client)
+        # print("retour_infos_client", retour_infos_client)
         return retour_infos_client
 
     def _synthese_comptes(self):
@@ -212,8 +207,21 @@ class Client(object):
         r = self._get(url=_URL_SYNTHESE_COMPTES)
         retour_synthese_comptes = json.loads(r.text)
         self.synthese_comptes_json = retour_synthese_comptes
+        # print("self.synthese_comptes_json", self.synthese_comptes_json)
 
         return retour_synthese_comptes
+
+    def _write_json_file(self, file, outname = "out.json"):
+        with open(outname, 'w') as outfile:
+            json.dump(file, outfile)
+        return
+
+    def _get_ops(self):
+        uid = self.synthese_comptes_json['accounts'][0]['uid']
+        r = self._get(url=urljoin(_URL_BASE, "accounts/" + uid + "/transactions/after/0/limit/25"))
+        retour_ops = json.loads(r.text)
+        self.retour_ops = retour_ops
+        return retour_ops
 
     def _logout(self):
         """ Se déconnecter """

@@ -4,7 +4,7 @@ ses comptes en ligne via son site web ou ses applications mobiles.
 :mod:`ingdirect` permet la consultation en Python ou par ligne de commande.
 """
 from builtins import object
-from ingdirect.client import Client
+from .client import Client
 
 __version__ = '0.1.2'  # En cohérence avec setup.py
 # Permet à Sphinx de récupérer ces éléments pour la documentation
@@ -76,7 +76,12 @@ def synthese_comptes(num_client, date_naissance, code):
     ing._saisie_code()
     ing._infos_client()
     retour_synthese_comptes = ing._synthese_comptes()
-    print("retour_synthese_comptes", retour_synthese_comptes)
+    # print("retour_synthese_comptes", retour_synthese_comptes)
+    ing._write_json_file(retour_synthese_comptes, "synthesis.json")
+    retour_ops = ing._get_ops()
+    # print("retour_ops", retour_ops)
+    ing._write_json_file(retour_ops, "ops.json")
+
     ing._logout()
 
     return Synthese_comptes(retour_synthese_comptes)

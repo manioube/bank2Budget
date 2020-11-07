@@ -1,4 +1,13 @@
 .idea/
+*.json
+*.qif
+config/
+config/ynabConfig.py
+ynabConfig.py
+banks/ing/data/
+.env
+settings.py
+sandbox.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

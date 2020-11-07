@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import click
-import ingdirect as ing
+from .banks import ing
 
 # Utilisation possible
 # ing --numero-client <numero_client> --date-naissance <date_naissance>
