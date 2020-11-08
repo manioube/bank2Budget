@@ -19,48 +19,53 @@ configuration.api_key['Authorization'] = settings.YNAB['APIKEY'] # api_key is a 
 configuration.api_key_prefix['Authorization'] = 'Bearer'
 api_instance = ynab.TransactionsApi(ynab.ApiClient(configuration))
 
-def loadJSONfromFile(file): # will load JSON from a JSON file
-    with open(file) as f:
-        r = json.load(f)
-    return r
+class Ynab():
 
-def JSON_OPS_2_YNAB(src): # will post json bank transactions to YNAB
-    for op in itertools.islice(src , 0, 1): # number of transactions that should be posted
+    def sayHello(self):
+        print("hello")
 
-        date = op['effectiveDate']
-        amount = int(op['amount'] * 1000) # amount is in milliunit of currency
-        import_id = op['id'] #"YNAB:" + amount + ":" + date + ":" #[occurrence]
-        approved = True
-        payee_name =  (op['detail'][:97] + '...') if len(op['detail']) > 99 else op['detail'] # limit to 100 characters
+    def loadJSONfromFile(self, file): # will load JSON from a JSON file
+        with open(file) as f:
+            r = json.load(f)
+        return r
 
-        transaction = ynab.SaveTransactionWrapper(
+    def JSON_OPS_2_YNAB(self, src): # will post json bank transactions to YNAB
+        for op in itertools.islice(src , 0, 20): # number of transactions that should be posted
 
-                {
-                    'account_id': settings.YNAB['BANKACCOUNTID'],
-                    'date': date,
-                    'amount': amount,
-                    'approved': approved,
-                    'import_id': import_id,
-                    'payee_name': payee_name
-                }
+            date = op['effectiveDate']
+            amount = int(op['amount'] * 1000) # amount is in milliunit of currency
+            import_id = op['id'] #"YNAB:" + amount + ":" + date + ":" #[occurrence]
+            approved = True
+            payee_name =  (op['detail'][:97] + '...') if len(op['detail']) > 99 else op['detail'] # limit to 100 characters
 
-        )
+            transaction = ynab.SaveTransactionWrapper(
 
-        try:
-            # List transactions
-            ## api_response = api_instance.get_transactions(budget_id) #, since_date = since_date, type = type
+                    {
+                        'account_id': settings.YNAB['BANKACCOUNTID'],
+                        'date': date,
+                        'amount': amount,
+                        'approved': approved,
+                        'import_id': import_id,
+                        'payee_name': payee_name
+                    }
 
-            # see https://github.com/deanmcgregor/ynab-python/blob/master/docs/SaveTransaction.md for info on transactions
-            api_response = api_instance.create_transaction(settings.YNAB['BUDGETID'], transaction)
-            pprint(api_response)
-        except ApiException as e:
-            print("Exception when calling TransactionsApi->get_transactions: %s\n" % e)
+            )
 
-script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
-rel_path = "../../banks/ing/data/ops.json" #<-- relative path to file containing bank transactions
-abs_file_path = os.path.join(script_dir, rel_path)
+            try:
+                # List transactions
+                ## api_response = api_instance.get_transactions(budget_id) #, since_date = since_date, type = type
 
-JSON_OPS_2_YNAB ( loadJSONfromFile ( abs_file_path ) )
+                # see https://github.com/deanmcgregor/ynab-python/blob/master/docs/SaveTransaction.md for info on transactions
+                api_response = api_instance.create_transaction(settings.YNAB['BUDGETID'], transaction)
+                pprint(api_response)
+            except ApiException as e:
+                print("Exception when calling TransactionsApi->get_transactions: %s\n" % e)
+
+# script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+# rel_path = "../../path/to/file.json" #<-- relative path to file containing bank transactions
+# abs_file_path = os.path.join(script_dir, rel_path)
+#
+# Ynab.JSON_OPS_2_YNAB ( Ynab.loadJSONfromFile ( abs_file_path ) )
 
 
 

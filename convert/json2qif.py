@@ -30,10 +30,8 @@ def json2qif(src, tgt): # will convert src json file into tgt qif file
         print ("qif_string:", qif_string)
 
         # write qif file locally
-        f= open("ops.qif","w")
+        f= open(tgt,"w")
         f.write(qif_string)
         f.close()
 
         return
-
-json2qif('ops.json', '')

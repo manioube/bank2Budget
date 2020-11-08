@@ -5,6 +5,7 @@ ses comptes en ligne via son site web ou ses applications mobiles.
 """
 from builtins import object
 from .client import Client
+from budgeting_apps.YNAB.ynab import Ynab
 
 __version__ = '0.1.2'  # En cohérence avec setup.py
 # Permet à Sphinx de récupérer ces éléments pour la documentation
@@ -66,22 +67,24 @@ def correction_encodage(chaine_mal_encodee):
 
 def synthese_comptes(num_client, date_naissance, code):
     """ Obtenir la synthèse des comptes sous forme de dictionnaire """
+
     ing = Client()
     ing._login(num_client=num_client, date_naissance=date_naissance)
     ing._recuperer_url_keypad()
-    #ing._get_a_pic()
     ing._recuperer_keypad()
     ing._code_a_saisir(code_complet=code)
-    ing._recuperer_coord_chiffres() # it seems the error is here!
+    ing._recuperer_coord_chiffres()
     ing._saisie_code()
-    ing._infos_client()
+    # ing._infos_client()
     retour_synthese_comptes = ing._synthese_comptes()
     # print("retour_synthese_comptes", retour_synthese_comptes)
-    ing._write_json_file(retour_synthese_comptes, "synthesis.json")
     retour_ops = ing._get_ops()
     # print("retour_ops", retour_ops)
-    ing._write_json_file(retour_ops, "ops.json")
-
     ing._logout()
 
-    return Synthese_comptes(retour_synthese_comptes)
+    ynab = Ynab()
+    # ynab.sayHello()
+    ynab.JSON_OPS_2_YNAB( retour_ops )
+    # ing._write_json_file(retour_ops, "ops.json")
+    # ing._write_json_file(retour_synthese_comptes, "synthesis.json")
+    # return Synthese_comptes(retour_synthese_comptes)
