@@ -1,3 +1,0 @@
-opencv-python-headless>=3.4.0.12
-requests>=2.6.0
-click>=6.7

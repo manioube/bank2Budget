@@ -95,7 +95,7 @@ class Client(object):
         self.pin_positions = r.json().get('pinPositions')
 
         # print("self.url_keypad:",self.url_keypad)
-        print("self.pin_positions:", self.pin_positions)
+        # print("self.pin_positions:", self.pin_positions)
 
     def _recuperer_keypad(self):
         """ Télécharge l'image du clavier pour saisir le code
@@ -118,7 +118,7 @@ class Client(object):
             retour_code.append(int(code_complet[int(self.pin_positions[i])-1]))
         #self.code_a_saisir = [0,1,2,3,4,5,6,7,8,9] # retour_code
         self.code_a_saisir = retour_code
-        print ("code_a_saisir", retour_code)
+        # print ("code_a_saisir", retour_code)
         return retour_code
         #return [0,1,2,3,4,5,6,7,8,9]
 
@@ -140,7 +140,7 @@ class Client(object):
             os.remove(_FICHIER_KEYPAD)
 
         threshold = 0.9
-        print ("chiffre", chiffre)
+        # print ("chiffre", chiffre)
         # print("chiffre not in range(0, 10)", chiffre not in range(0, 10))
         if chiffre not in range(0, 10):
             return False
@@ -150,27 +150,27 @@ class Client(object):
                                     _REPERTOIRE_IMAGES_CHIFFRES,
                                     str(chiffre)+'.png'
                                     )
-            print ("chemin_image_chiffre", chemin_image_chiffre)
+            # print ("chemin_image_chiffre", chemin_image_chiffre)
 
             template = cv.imread(chemin_image_chiffre, 0)
             # print ("template", template)
             w, h = template.shape[::-1]  # Taille de l'image du chiffre
-            print("w, h", w, h)
+            # print("w, h", w, h)
 
             res = cv.matchTemplate(
                                     self.img_gray,
                                     template,
                                     cv.TM_CCOEFF_NORMED
                                     )
-            print("res",res)
+            # print("res",res)
             # print("threshold",threshold)
             loc = np.where(res >= threshold) # it seems the error is here!
-            print("loc", loc)
+            # print("loc", loc)
             if len(loc[0]) >= 1 & len(loc[1]) >= 1:
                 retour = [(loc[1][0]+w/2), (loc[0][0]+h/2)]
             else:
                 retour = False  # Le chiffre n'a pas été trouvé
-            print ("retour:",retour)
+            # print ("retour:",retour)
             return retour
 
     def _recuperer_coord_chiffres(self):
@@ -179,7 +179,7 @@ class Client(object):
         for digit in self.code_a_saisir:
             liste_coord_chiffres.append(self._trouver_chiffre(digit))
         self.liste_coord_chiffres = liste_coord_chiffres
-        print("liste_coord_chiffres",liste_coord_chiffres)
+        # print("liste_coord_chiffres",liste_coord_chiffres)
         return liste_coord_chiffres
 
     def _saisie_code(self):
@@ -189,7 +189,7 @@ class Client(object):
         r = self._post(url=_URL_SAISIE_CODE, post_data=post_data_dict)
         retour_saisie_code = json.loads(r.text)
         self.headers['Ingdf-Auth-Token'] = r.headers.get('Ingdf-Auth-Token')
-        print("retour_saisie_code", retour_saisie_code)
+        # print("retour_saisie_code", retour_saisie_code)
         return retour_saisie_code
 
     def _infos_client(self):
