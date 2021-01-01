@@ -36,5 +36,6 @@ def main(
         "retour_ops": retour_ops,
         "message": "data was retrieved from ING"
     }
+    #ing._write_json_file(data)
     return data
 
