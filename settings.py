@@ -10,16 +10,29 @@ def o(x):
     else:
         raise Exception('UNKNOWN PARAMETER: environment parameter not set. Set it in `.env` file, or like so: os.environ[foo]="bar".')
 
-YNAB = {
-    'APIKEY': o("ynab_APIkey"),
-    'BUDGETID': o("ynab_budgetId"),
-    'BANKACCOUNTID': o("ynab_bankAccountId"),
-}
+try:
+    YNAB = {
+            'APIKEY': o("ynab_APIkey"),
+            'BUDGETID': o("ynab_budgetId"),
+            'BANKACCOUNTID': o("ynab_bankAccountId"),
+    }
+except:
+    pass
 
-ING = {
-    'ACCOUNT':o("ing_account"),
-    'DOB': o("ing_dob"),
-    'CODE': o("ing_code")
-}
+try:
+    TRANSFERWISE = {
+        'API_TRANSFERWISE':o("transferwise_api_key"),
+        'PROFILE_ID':o("transferwise_profile_id"),
+        'ACCOUNT_ID':o("transferwise_account_id"),
+    }
+except:
+    pass
 
-# print(ING['CODE'])
+try:
+    ING = {
+        'ACCOUNT':o("ing_account"),
+        'DOB': o("ing_dob"),
+        'CODE': o("ing_code")
+    }
+except:
+    pass
